@@ -1,0 +1,34 @@
+# Binaries
+/game-integration-api
+
+# Build output
+/build/
+/bin/
+
+# Vendor
+/vendor/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+*.iml
+
+# Environment files
+.env
+
+# Logs
+*.log
+
+# Dependency directories (Go modules)
+/go.sum
+
+# Docker
+*.pid
+
+# Migration binaries
+migrate 

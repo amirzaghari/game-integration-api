@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: gameuser
+      POSTGRES_PASSWORD: gamepass
+      POSTGRES_DB: gamedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  wallet:
+    image: docker.io/kentechsp/wallet-client
+    environment:
+      - WALLET_TOKEN=Wj9QhLqMUPAHSNMxeT2o
+    ports:
+      - "8000:8000"
+
+  game-integration-api:
+    build: .
+    depends_on:
+      - db
+      - wallet
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=gameuser
+      - DB_PASSWORD=gamepass
+      - DB_NAME=gamedb
+      - WALLET_URL=http://wallet:8000
+      - WALLET_TOKEN=Wj9QhLqMUPAHSNMxeT2o
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+
+volumes:
+  db_data: 
