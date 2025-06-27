@@ -17,7 +17,7 @@ A Go service for integrating third-party casino games with wallet and transactio
 
 1. **Clone the repository:**
    ```sh
-   git clone <your-repo-url>
+   git clone git@github.com:amirzaghari/game-integration-api.git
    cd GameIntegrationAPI
    ```
 

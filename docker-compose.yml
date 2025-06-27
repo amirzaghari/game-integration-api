@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -15,11 +13,11 @@ services:
   wallet:
     image: docker.io/kentechsp/wallet-client
     environment:
-      - WALLET_TOKEN=Wj9QhLqMUPAHSNMxeT2o
+      - WALLET_TOKEN=${WALLET_TOKEN}
     ports:
       - "8000:8000"
 
-  game-integration-api:
+  app:
     build: .
     depends_on:
       - db
@@ -31,7 +29,7 @@ services:
       - DB_PASSWORD=gamepass
       - DB_NAME=gamedb
       - WALLET_URL=http://wallet:8000
-      - WALLET_TOKEN=Wj9QhLqMUPAHSNMxeT2o
+      - WALLET_TOKEN=${WALLET_TOKEN}
     ports:
       - "8080:8080"
     volumes:

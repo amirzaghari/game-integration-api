@@ -1,24 +1,24 @@
-APP_NAME=game-integration-api
+APP_NAME=app
 
-.PHONY: build run test migrate-up migrate-down docker-up docker-down
+.PHONY: build run test migrate-up migrate-down up down
+
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down
 
 build:
-	go build -o $(APP_NAME) ./cmd
+	docker-compose exec app go build -o $(APP_NAME) ./cmd
 
 run:
-	go run ./cmd
+	docker-compose exec app go run ./cmd
 
 test:
-	go test ./...
+	docker-compose exec app go test ./...
 
 migrate-up:
-	migrate -path ./migrations -database "postgres://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:$$DB_PORT/$$DB_NAME?sslmode=disable" up
+	docker-compose exec app migrate -path ./migrations -database "postgres://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:$$DB_PORT/$$DB_NAME?sslmode=disable" up
 
 migrate-down:
-	migrate -path ./migrations -database "postgres://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:$$DB_PORT/$$DB_NAME?sslmode=disable" down
-
-docker-up:
-	docker-compose up --build
-
-docker-down:
-	docker-compose down 
+	docker-compose exec app migrate -path ./migrations -database "postgres://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:$$DB_PORT/$$DB_NAME?sslmode=disable" down 
