@@ -18,7 +18,9 @@ services:
       - "8000:8000"
 
   app:
-    build: .
+    build:
+      context: .
+      target: dev
     depends_on:
       - db
       - wallet

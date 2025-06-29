@@ -1,0 +1,404 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A Game Integration API for casino games with wallet management",
+        "title": "Game Integration API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authenticate user",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK\" example({\"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized\" example({\"error\": \"Invalid credentials\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/bet/cancel": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bet"
+                ],
+                "summary": "Cancel a transaction",
+                "parameters": [
+                    {
+                        "description": "Cancel details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.CancelRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK\" example({\"transaction_id\": \"tx-125\", \"provider_transaction_id\": \"provider-tx-123\", \"old_balance\": 1000.00, \"new_balance\": 1000.00, \"status\": \"CANCELLED\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.BetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/bet/deposit": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bet"
+                ],
+                "summary": "Settle a bet (deposit)",
+                "parameters": [
+                    {
+                        "description": "Deposit details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.DepositRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK\" example({\"transaction_id\": \"tx-124\", \"provider_transaction_id\": \"provider-tx-123\", \"old_balance\": 900.00, \"new_balance\": 1000.00, \"status\": \"WON\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.BetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/bet/withdraw": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bet"
+                ],
+                "summary": "Place a bet (withdraw)",
+                "parameters": [
+                    {
+                        "description": "Withdraw details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.WithdrawRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK\" example({\"transaction_id\": \"tx-123\", \"provider_transaction_id\": \"provider-tx-123\", \"old_balance\": 1000.00, \"new_balance\": 900.00, \"status\": \"PLACED\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.BetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthz": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Get player profile",
+                "responses": {
+                    "200": {
+                        "description": "OK\" example({\"user_id\": 1, \"balance\": 5000.00, \"currency\": \"USD\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ProfileResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "http.BetResponse": {
+            "type": "object",
+            "properties": {
+                "new_balance": {
+                    "type": "number",
+                    "example": 900
+                },
+                "old_balance": {
+                    "type": "number",
+                    "example": 1000
+                },
+                "provider_transaction_id": {
+                    "type": "string",
+                    "example": "provider-tx-123"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "PLACED"
+                },
+                "transaction_id": {
+                    "type": "string",
+                    "example": "tx-123"
+                }
+            }
+        },
+        "http.CancelRequest": {
+            "type": "object",
+            "required": [
+                "provider_transaction_id"
+            ],
+            "properties": {
+                "provider_transaction_id": {
+                    "type": "string",
+                    "example": "provider-tx-123"
+                }
+            }
+        },
+        "http.DepositRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency",
+                "provider_transaction_id",
+                "provider_withdrawn_transaction_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "example": 100
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "USD"
+                },
+                "provider_transaction_id": {
+                    "type": "string",
+                    "example": "provider-tx-123"
+                },
+                "provider_withdrawn_transaction_id": {
+                    "type": "string",
+                    "example": "provider-tx-122"
+                }
+            }
+        },
+        "http.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.LoginRequest": {
+            "description": "Example: {\"username\": \"testuser1\", \"password\": \"testpass\"}",
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "testpass"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "testuser1"
+                }
+            }
+        },
+        "http.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+            }
+        },
+        "http.ProfileResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number",
+                    "example": 5000
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "USD"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "http.WithdrawRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency",
+                "provider_transaction_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "example": 100
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "USD"
+                },
+                "provider_transaction_id": {
+                    "type": "string",
+                    "example": "provider-tx-123"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

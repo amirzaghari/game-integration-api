@@ -1,12 +1,18 @@
 APP_NAME=app
 
-.PHONY: build run test migrate-up migrate-down up down
+.PHONY: build run test migrate-up migrate-down up down dev local-dev
 
 up:
 	docker-compose up -d
 
 down:
 	docker-compose down
+
+dev:
+	docker-compose up --build
+
+local-dev:
+	export $$(grep -v '^#' .env | xargs) && air
 
 build:
 	docker-compose exec app go build -o $(APP_NAME) ./cmd
