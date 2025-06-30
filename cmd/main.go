@@ -1,11 +1,12 @@
 // @title Game Integration API
 // @version 1.0
-// @description A Game Integration API for casino games with wallet management
+// @description A Game Integration API for casino games with wallet management. Provides authentication, player information, bet placement (withdraw), bet settlement (deposit), and transaction cancellation endpoints.
 // @host localhost:8080
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
+// @description IMPORTANT: Enter your JWT token with "Bearer " prefix. Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyOSwiZXhwIjoxNzUxMjg4ODc0fQ.IwLr7sPvhXb_3HxI4d8F_UQinvJxc3ePfuM30ztMcdU
 package main
 
 import (
@@ -13,12 +14,13 @@ import (
 	"gameintegrationapi/internal/delivery/http"
 	"gameintegrationapi/internal/domain"
 	"gameintegrationapi/internal/infrastructure"
+	"gameintegrationapi/internal/repository"
+	"gameintegrationapi/internal/usecase"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -52,38 +54,27 @@ func main() {
 
 	if err := db.AutoMigrate(
 		&domain.User{},
-		&domain.Bet{},
 		&domain.Transaction{},
 	); err != nil {
 		log.Fatalf("failed to run migrations: %v", err)
 	}
 
-	runSQLMigrations(db, "./migrations")
-
 	infrastructure.SeedTestUsers(db)
 
-	r := gin.Default()
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(db)
+	txRepo := repository.NewTransactionRepository(db)
 
-	r.Use(func(c *gin.Context) {
-		c.Set("db", db)
-		c.Next()
-	})
+	// Initialize use cases
+	authUseCase := usecase.NewAuthUseCase(userRepo)
+	playerUseCase := usecase.NewPlayerUseCase(userRepo)
+	walletUseCase := usecase.NewWalletUseCase(userRepo, txRepo, db)
 
-	r.GET("/", func(c *gin.Context) {
-		c.Redirect(301, "/swagger/index.html")
-	})
+	// Initialize handlers
+	handlers := http.NewHandlers(authUseCase, playerUseCase, walletUseCase)
 
-	r.GET("/swagger/*any", http.SwaggerHandler())
-
-	r.POST("/auth/login", http.Login)
-
-	// Protected routes
-	r.GET("/profile", http.JWTAuthMiddleware(db), http.Profile)
-	r.POST("/bet/withdraw", http.JWTAuthMiddleware(db), http.Withdraw)
-	r.POST("/bet/deposit", http.JWTAuthMiddleware(db), http.Deposit)
-	r.POST("/bet/cancel", http.JWTAuthMiddleware(db), http.Cancel)
-
-	r.GET("/healthz", http.Healthz)
+	// Setup router
+	r := http.NewRouter(handlers)
 
 	port := os.Getenv("PORT")
 	if port == "" {

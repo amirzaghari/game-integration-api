@@ -402,6 +402,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "BearerAuth": {
+            "description": "IMPORTANT: Enter your JWT token with \"Bearer \" prefix. Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyOSwiZXhwIjoxNzUxMjczMTk5fQ.3PFJMSoiV9oIsmHmHdnVNjuinFu_-HPUfzOkv9gCHW4",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

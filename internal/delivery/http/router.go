@@ -22,7 +22,7 @@ func NewRouter(handlers *Handlers) *gin.Engine {
 	r.POST("/bet/deposit", handlers.AuthMiddleware(), handlers.Deposit)
 	r.POST("/bet/cancel", handlers.AuthMiddleware(), handlers.Cancel)
 
-	r.GET("/healthz", handlers.Healthz)
+	r.GET("/metrics", Metrics)
 
 	return r
 }
