@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"errors"
 	"gameintegrationapi/internal/domain"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -22,8 +24,11 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 func (r *userRepository) FindByCredentials(username, password string) (*domain.User, error) {
 	var user domain.User
-	if err := r.db.Where("username = ? AND password = ?", username, password).First(&user).Error; err != nil {
+	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
 		return nil, err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, errors.New("invalid credentials")
 	}
 	return &user, nil
 }

@@ -188,3 +188,13 @@ Also have a look at the [FAQ](FAQ.md).
 ---
 
 Looking for alternatives? [https://awesome-go.com/#database](https://awesome-go.com/#database).
+
+## Running Tests
+
+To run the tests, use:
+
+```
+make test
+```
+
+This will run all tests in the `test/` directory inside the Docker container.

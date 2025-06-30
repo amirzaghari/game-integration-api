@@ -3,9 +3,8 @@ package usecase
 import (
 	"errors"
 	"gameintegrationapi/internal/repository"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"gameintegrationapi/internal/infrastructure"
 )
 
 var jwtKey = []byte("your-secret-key") // TODO: Move to config
@@ -28,17 +27,10 @@ func (uc *authUseCase) Login(username, password string) (string, error) {
 		return "", errors.New("invalid credentials")
 	}
 
-	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(expirationTime),
-		Subject:   string(rune(user.ID)),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	token, err := infrastructure.GenerateJWT(user.ID, user.Username, string(jwtKey))
 	if err != nil {
 		return "", err
 	}
 
-	return tokenString, nil
+	return token, nil
 }

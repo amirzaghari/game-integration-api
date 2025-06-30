@@ -17,6 +17,7 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
+                "description": "Authenticate user and return JWT token and username",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,27 +35,30 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.LoginRequest"
+                            "$ref": "#/definitions/http.loginRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK\" example({\"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"})",
+                        "description": "{token: string, username: string}",
                         "schema": {
-                            "$ref": "#/definitions/http.LoginResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "401": {
-                        "description": "Unauthorized\" example({\"error\": \"Invalid credentials\"})",
+                        "description": "Invalid credentials",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -67,6 +71,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Cancel a bet transaction",
                 "consumes": [
                     "application/json"
                 ],
@@ -84,27 +89,30 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CancelRequest"
+                            "$ref": "#/definitions/http.cancelRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK\" example({\"transaction_id\": \"tx-125\", \"provider_transaction_id\": \"provider-tx-123\", \"old_balance\": 1000.00, \"new_balance\": 1000.00, \"status\": \"CANCELLED\"})",
+                        "description": "Bet response",
                         "schema": {
-                            "$ref": "#/definitions/http.BetResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "401": {
-                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -117,6 +125,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Settle a bet by depositing funds",
                 "consumes": [
                     "application/json"
                 ],
@@ -134,27 +143,30 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.DepositRequest"
+                            "$ref": "#/definitions/http.depositRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK\" example({\"transaction_id\": \"tx-124\", \"provider_transaction_id\": \"provider-tx-123\", \"old_balance\": 900.00, \"new_balance\": 1000.00, \"status\": \"WON\"})",
+                        "description": "Bet response",
                         "schema": {
-                            "$ref": "#/definitions/http.BetResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "401": {
-                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -167,6 +179,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Place a bet by withdrawing funds",
                 "consumes": [
                     "application/json"
                 ],
@@ -184,41 +197,48 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.WithdrawRequest"
+                            "$ref": "#/definitions/http.withdrawRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK\" example({\"transaction_id\": \"tx-123\", \"provider_transaction_id\": \"provider-tx-123\", \"old_balance\": 1000.00, \"new_balance\": 900.00, \"status\": \"PLACED\"})",
+                        "description": "Bet response",
                         "schema": {
-                            "$ref": "#/definitions/http.BetResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request\" example({\"error\": \"Invalid request\"})",
+                        "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "401": {
-                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             }
         },
-        "/healthz": {
+        "/metrics": {
             "get": {
-                "tags": [
-                    "Health"
+                "description": "Get application metrics in Prometheus format.",
+                "produces": [
+                    "text/plain"
                 ],
-                "summary": "Health check",
+                "tags": [
+                    "Metrics"
+                ],
+                "summary": "Get application metrics",
                 "responses": {
                     "200": {
-                        "description": "ok",
+                        "description": "Prometheus metrics",
                         "schema": {
                             "type": "string"
                         }
@@ -233,6 +253,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Get the authenticated player's profile",
                 "produces": [
                     "application/json"
                 ],
@@ -242,15 +263,17 @@ const docTemplate = `{
                 "summary": "Get player profile",
                 "responses": {
                     "200": {
-                        "description": "OK\" example({\"user_id\": 1, \"balance\": 5000.00, \"currency\": \"USD\"})",
+                        "description": "Profile response",
                         "schema": {
-                            "$ref": "#/definitions/http.ProfileResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "401": {
-                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -258,83 +281,40 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "http.BetResponse": {
-            "type": "object",
-            "properties": {
-                "new_balance": {
-                    "type": "number",
-                    "example": 900
-                },
-                "old_balance": {
-                    "type": "number",
-                    "example": 1000
-                },
-                "provider_transaction_id": {
-                    "type": "string",
-                    "example": "provider-tx-123"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "PLACED"
-                },
-                "transaction_id": {
-                    "type": "string",
-                    "example": "tx-123"
-                }
-            }
-        },
-        "http.CancelRequest": {
+        "http.cancelRequest": {
             "type": "object",
             "required": [
                 "provider_transaction_id"
             ],
             "properties": {
                 "provider_transaction_id": {
-                    "type": "string",
-                    "example": "provider-tx-123"
+                    "type": "string"
                 }
             }
         },
-        "http.DepositRequest": {
+        "http.depositRequest": {
             "type": "object",
             "required": [
-                "amount",
                 "currency",
                 "provider_transaction_id",
                 "provider_withdrawn_transaction_id"
             ],
             "properties": {
                 "amount": {
-                    "type": "number",
-                    "example": 100
+                    "type": "number"
                 },
                 "currency": {
-                    "type": "string",
-                    "example": "USD"
+                    "type": "string"
                 },
                 "provider_transaction_id": {
-                    "type": "string",
-                    "example": "provider-tx-123"
+                    "type": "string"
                 },
                 "provider_withdrawn_transaction_id": {
-                    "type": "string",
-                    "example": "provider-tx-122"
-                }
-            }
-        },
-        "http.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "message": {
                     "type": "string"
                 }
             }
         },
-        "http.LoginRequest": {
-            "description": "Example: {\"username\": \"testuser1\", \"password\": \"testpass\"}",
+        "http.loginRequest": {
             "type": "object",
             "required": [
                 "password",
@@ -351,33 +331,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                }
-            }
-        },
-        "http.ProfileResponse": {
-            "type": "object",
-            "properties": {
-                "balance": {
-                    "type": "number",
-                    "example": 5000
-                },
-                "currency": {
-                    "type": "string",
-                    "example": "USD"
-                },
-                "user_id": {
-                    "type": "integer",
-                    "example": 1
-                }
-            }
-        },
-        "http.WithdrawRequest": {
+        "http.withdrawRequest": {
             "type": "object",
             "required": [
                 "amount",
@@ -386,23 +340,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "amount": {
-                    "type": "number",
-                    "example": 100
+                    "type": "number"
                 },
                 "currency": {
-                    "type": "string",
-                    "example": "USD"
+                    "type": "string"
+                },
+                "game_id": {
+                    "type": "string"
                 },
                 "provider_transaction_id": {
-                    "type": "string",
-                    "example": "provider-tx-123"
+                    "type": "string"
+                },
+                "round_id": {
+                    "type": "string"
                 }
             }
         }
     },
     "securityDefinitions": {
         "BearerAuth": {
-            "description": "IMPORTANT: Enter your JWT token with \"Bearer \" prefix. Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyOSwiZXhwIjoxNzUxMjczMTk5fQ.3PFJMSoiV9oIsmHmHdnVNjuinFu_-HPUfzOkv9gCHW4",
+            "description": "IMPORTANT: Enter your JWT token with \"Bearer \" prefix. Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyOSwiZXhwIjoxNzUxMjg4ODc0fQ.IwLr7sPvhXb_3HxI4d8F_UQinvJxc3ePfuM30ztMcdU",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -417,7 +374,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Game Integration API",
-	Description:      "A Game Integration API for casino games with wallet management",
+	Description:      "A Game Integration API for casino games with wallet management. Provides authentication, player information, bet placement (withdraw), bet settlement (deposit), and transaction cancellation endpoints.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

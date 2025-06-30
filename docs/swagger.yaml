@@ -1,60 +1,28 @@
 basePath: /
 definitions:
-  http.BetResponse:
-    properties:
-      new_balance:
-        example: 900
-        type: number
-      old_balance:
-        example: 1000
-        type: number
-      provider_transaction_id:
-        example: provider-tx-123
-        type: string
-      status:
-        example: PLACED
-        type: string
-      transaction_id:
-        example: tx-123
-        type: string
-    type: object
-  http.CancelRequest:
+  http.cancelRequest:
     properties:
       provider_transaction_id:
-        example: provider-tx-123
         type: string
     required:
     - provider_transaction_id
     type: object
-  http.DepositRequest:
+  http.depositRequest:
     properties:
       amount:
-        example: 100
         type: number
       currency:
-        example: USD
         type: string
       provider_transaction_id:
-        example: provider-tx-123
         type: string
       provider_withdrawn_transaction_id:
-        example: provider-tx-122
         type: string
     required:
-    - amount
     - currency
     - provider_transaction_id
     - provider_withdrawn_transaction_id
     type: object
-  http.ErrorResponse:
-    properties:
-      error:
-        type: string
-      message:
-        type: string
-    type: object
-  http.LoginRequest:
-    description: 'Example: {"username": "testuser1", "password": "testpass"}'
+  http.loginRequest:
     properties:
       password:
         example: testpass
@@ -66,34 +34,17 @@ definitions:
     - password
     - username
     type: object
-  http.LoginResponse:
-    properties:
-      token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        type: string
-    type: object
-  http.ProfileResponse:
-    properties:
-      balance:
-        example: 5000
-        type: number
-      currency:
-        example: USD
-        type: string
-      user_id:
-        example: 1
-        type: integer
-    type: object
-  http.WithdrawRequest:
+  http.withdrawRequest:
     properties:
       amount:
-        example: 100
         type: number
       currency:
-        example: USD
+        type: string
+      game_id:
         type: string
       provider_transaction_id:
-        example: provider-tx-123
+        type: string
+      round_id:
         type: string
     required:
     - amount
@@ -103,7 +54,9 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: A Game Integration API for casino games with wallet management
+  description: A Game Integration API for casino games with wallet management. Provides
+    authentication, player information, bet placement (withdraw), bet settlement (deposit),
+    and transaction cancellation endpoints.
   title: Game Integration API
   version: "1.0"
 paths:
@@ -111,28 +64,32 @@ paths:
     post:
       consumes:
       - application/json
+      description: Authenticate user and return JWT token and username
       parameters:
       - description: User credentials
         in: body
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/http.LoginRequest'
+          $ref: '#/definitions/http.loginRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 'OK" example({"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."})'
+          description: '{token: string, username: string}'
           schema:
-            $ref: '#/definitions/http.LoginResponse'
+            additionalProperties: true
+            type: object
         "400":
-          description: 'Bad Request" example({"error": "Invalid request"})'
+          description: Invalid request
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
         "401":
-          description: 'Unauthorized" example({"error": "Invalid credentials"})'
+          description: Invalid credentials
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
       summary: Authenticate user
       tags:
       - Auth
@@ -140,30 +97,32 @@ paths:
     post:
       consumes:
       - application/json
+      description: Cancel a bet transaction
       parameters:
       - description: Cancel details
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/http.CancelRequest'
+          $ref: '#/definitions/http.cancelRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 'OK" example({"transaction_id": "tx-125", "provider_transaction_id":
-            "provider-tx-123", "old_balance": 1000.00, "new_balance": 1000.00, "status":
-            "CANCELLED"})'
+          description: Bet response
           schema:
-            $ref: '#/definitions/http.BetResponse'
+            additionalProperties: true
+            type: object
         "400":
-          description: 'Bad Request" example({"error": "Invalid request"})'
+          description: Invalid request
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
         "401":
-          description: 'Unauthorized" example({"error": "Unauthorized"})'
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
       security:
       - BearerAuth: []
       summary: Cancel a transaction
@@ -173,30 +132,32 @@ paths:
     post:
       consumes:
       - application/json
+      description: Settle a bet by depositing funds
       parameters:
       - description: Deposit details
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/http.DepositRequest'
+          $ref: '#/definitions/http.depositRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 'OK" example({"transaction_id": "tx-124", "provider_transaction_id":
-            "provider-tx-123", "old_balance": 900.00, "new_balance": 1000.00, "status":
-            "WON"})'
+          description: Bet response
           schema:
-            $ref: '#/definitions/http.BetResponse'
+            additionalProperties: true
+            type: object
         "400":
-          description: 'Bad Request" example({"error": "Invalid request"})'
+          description: Invalid request
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
         "401":
-          description: 'Unauthorized" example({"error": "Unauthorized"})'
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
       security:
       - BearerAuth: []
       summary: Settle a bet (deposit)
@@ -206,59 +167,66 @@ paths:
     post:
       consumes:
       - application/json
+      description: Place a bet by withdrawing funds
       parameters:
       - description: Withdraw details
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/http.WithdrawRequest'
+          $ref: '#/definitions/http.withdrawRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 'OK" example({"transaction_id": "tx-123", "provider_transaction_id":
-            "provider-tx-123", "old_balance": 1000.00, "new_balance": 900.00, "status":
-            "PLACED"})'
+          description: Bet response
           schema:
-            $ref: '#/definitions/http.BetResponse'
+            additionalProperties: true
+            type: object
         "400":
-          description: 'Bad Request" example({"error": "Invalid request"})'
+          description: Invalid request
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
         "401":
-          description: 'Unauthorized" example({"error": "Unauthorized"})'
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
       security:
       - BearerAuth: []
       summary: Place a bet (withdraw)
       tags:
       - Bet
-  /healthz:
+  /metrics:
     get:
+      description: Get application metrics in Prometheus format.
+      produces:
+      - text/plain
       responses:
         "200":
-          description: ok
+          description: Prometheus metrics
           schema:
             type: string
-      summary: Health check
+      summary: Get application metrics
       tags:
-      - Health
+      - Metrics
   /profile:
     get:
+      description: Get the authenticated player's profile
       produces:
       - application/json
       responses:
         "200":
-          description: 'OK" example({"user_id": 1, "balance": 5000.00, "currency":
-            "USD"})'
+          description: Profile response
           schema:
-            $ref: '#/definitions/http.ProfileResponse'
+            additionalProperties: true
+            type: object
         "401":
-          description: 'Unauthorized" example({"error": "Unauthorized"})'
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/http.ErrorResponse'
+            additionalProperties: true
+            type: object
       security:
       - BearerAuth: []
       summary: Get player profile
@@ -267,7 +235,7 @@ paths:
 securityDefinitions:
   BearerAuth:
     description: 'IMPORTANT: Enter your JWT token with "Bearer " prefix. Example:
-      Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyOSwiZXhwIjoxNzUxMjczMTk5fQ.3PFJMSoiV9oIsmHmHdnVNjuinFu_-HPUfzOkv9gCHW4'
+      Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyOSwiZXhwIjoxNzUxMjg4ODc0fQ.IwLr7sPvhXb_3HxI4d8F_UQinvJxc3ePfuM30ztMcdU'
     in: header
     name: Authorization
     type: apiKey
