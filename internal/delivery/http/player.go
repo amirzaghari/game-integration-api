@@ -44,7 +44,7 @@ func (h *Handlers) Profile(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"user_id":  user.ID,
+		"user_id":  user.WalletID,
 		"balance":  user.Balance,
 		"currency": user.Currency,
 	})

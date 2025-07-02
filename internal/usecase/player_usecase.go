@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"gameintegrationapi/internal/domain"
 	"gameintegrationapi/internal/infrastructure"
 	"gameintegrationapi/internal/repository"
@@ -34,7 +35,7 @@ func (uc *playerUseCase) GetPlayerInfo(userID uint) (*domain.User, error) {
 	}
 	profile, err := uc.walletClient.GetBalance(walletID)
 	if err != nil {
-		if err == infrastructure.ErrWalletUserNotFound {
+		if errors.Is(err, infrastructure.ErrWalletUserNotFound) {
 			return nil, infrastructure.ErrWalletUserNotFound
 		}
 		log.Printf("GetPlayerInfo: external wallet error: %v", err)
