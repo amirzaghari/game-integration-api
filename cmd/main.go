@@ -66,9 +66,12 @@ func main() {
 	txRepo := repository.NewTransactionRepository(db)
 
 	// Initialize use cases
+	walletClient := infrastructure.NewWalletClient(cfg.WalletURL, cfg.WalletToken)
+	log.Printf("WalletClient initialized with URL: %s", cfg.WalletURL)
+
 	authUseCase := usecase.NewAuthUseCase(userRepo)
-	playerUseCase := usecase.NewPlayerUseCase(userRepo)
-	walletUseCase := usecase.NewWalletUseCase(userRepo, txRepo, db)
+	playerUseCase := usecase.NewPlayerUseCase(userRepo, walletClient)
+	walletUseCase := usecase.NewWalletUseCase(userRepo, txRepo, db, walletClient)
 
 	// Initialize handlers
 	handlers := http.NewHandlers(authUseCase, playerUseCase, walletUseCase)

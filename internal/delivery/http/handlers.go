@@ -24,7 +24,6 @@ func NewHandlers(authUseCase usecase.AuthUseCase, playerUseCase usecase.PlayerUs
 	}
 }
 
-// AuthMiddleware checks JWT and sets user context
 func (h *Handlers) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")

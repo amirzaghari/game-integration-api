@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// loginRequest struct for authentication
 type loginRequest struct {
 	Username string `json:"username" binding:"required" example:"testuser1"`
 	Password string `json:"password" binding:"required" example:"testpass"`
@@ -40,7 +39,6 @@ func (h *Handlers) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// No SQL is performed here directly; ensure AuthUseCase.Login uses parameterized queries.
 	token, err := h.AuthUseCase.Login(req.Username, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})

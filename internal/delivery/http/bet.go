@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// withdrawRequest struct
-// ... existing code ...
 type withdrawRequest struct {
 	Currency            string  `json:"currency" binding:"required"`
 	Amount              float64 `json:"amount" binding:"required"`
@@ -49,7 +47,6 @@ func (h *Handlers) Withdraw(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// No SQL is performed here directly; ensure WalletUseCase.Withdraw uses parameterized queries.
 	tx, err := h.WalletUseCase.Withdraw(userID.(uint), req.Amount, req.Currency, req.ProviderTransaction, req.RoundID, req.GameID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -64,8 +61,6 @@ func (h *Handlers) Withdraw(c *gin.Context) {
 	})
 }
 
-// depositRequest struct
-// ... existing code ...
 type depositRequest struct {
 	Currency              string  `json:"currency" binding:"required"`
 	Amount                float64 `json:"amount"`
@@ -103,7 +98,6 @@ func (h *Handlers) Deposit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// No SQL is performed here directly; ensure WalletUseCase.Deposit uses parameterized queries.
 	tx, err := h.WalletUseCase.Deposit(userID.(uint), req.Amount, req.Currency, req.ProviderTransaction, req.ProviderWithdrawnTxID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -118,8 +112,6 @@ func (h *Handlers) Deposit(c *gin.Context) {
 	})
 }
 
-// cancelRequest struct
-// ... existing code ...
 type cancelRequest struct {
 	ProviderTransaction string `json:"provider_transaction_id" binding:"required"`
 }
@@ -151,7 +143,6 @@ func (h *Handlers) Cancel(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// No SQL is performed here directly; ensure WalletUseCase.Cancel uses parameterized queries.
 	tx, err := h.WalletUseCase.Cancel(userID.(uint), req.ProviderTransaction)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

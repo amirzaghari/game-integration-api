@@ -45,12 +45,12 @@ http://localhost:8080/swagger/index.html
   {
     "username": "testuser1",
     "password": "testpass"
-  }
-  ```
+}
+```
 - For protected endpoints, use the "Authorize" button and paste the JWT token returned from `/auth/login` as:
   ```
   Bearer <your_token>
-  ```
+```
 
 ## Running Tests
 
