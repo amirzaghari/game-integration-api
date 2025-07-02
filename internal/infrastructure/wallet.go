@@ -198,20 +198,21 @@ func (w *WalletClient) doOperationWithErrorMapping(url string, req interface{}) 
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode == 500 {
-		var errResp WalletErrorResponse
-		if err := json.NewDecoder(resp.Body).Decode(&errResp); err == nil && errResp.Msg != "" {
-			return nil, fmt.Errorf("%w: %s", ErrWalletServiceBadRequest, errResp.Msg)
-		}
-		return nil, fmt.Errorf("%w: wallet service error: ", ErrWalletServiceBadRequest)
-	}
+
 	if resp.StatusCode != 200 {
 		var errResp WalletErrorResponse
 		if err := json.NewDecoder(resp.Body).Decode(&errResp); err == nil && errResp.Msg != "" {
+			if resp.StatusCode >= 400 && resp.StatusCode < 600 {
+				return nil, fmt.Errorf("%w: %s", ErrWalletServiceBadRequest, errResp.Msg)
+			}
 			return nil, fmt.Errorf("wallet service error: %s", errResp.Msg)
+		}
+		if resp.StatusCode >= 400 && resp.StatusCode < 600 {
+			return nil, fmt.Errorf("%w: wallet service error: status %d", ErrWalletServiceBadRequest, resp.StatusCode)
 		}
 		return nil, fmt.Errorf("wallet service error: status %d", resp.StatusCode)
 	}
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err

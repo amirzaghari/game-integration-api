@@ -9,13 +9,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ProfileResponse struct {
+	UserID   uint    `json:"user_id" example:"1"`
+	Balance  float64 `json:"balance" example:"100.0"`
+	Currency string  `json:"currency" example:"USD"`
+}
+
+type ProfileErrorResponse struct {
+	Error string `json:"error" example:"unauthorized"`
+}
+
 // Profile godoc
 // @Summary Get player profile
 // @Tags Player
 // @Description Get the authenticated player's profile
 // @Produce json
-// @Success 200 {object} map[string]interface{} "Profile response"
-// @Failure 401 {object} map[string]interface{} "Unauthorized"
+// @Success 200 {object} ProfileResponse "Profile response"
+// @Failure 401 {object} ProfileErrorResponse "Unauthorized"
 // @Security BearerAuth
 // @Router /profile [get]
 func (h *Handlers) Profile(c *gin.Context) {

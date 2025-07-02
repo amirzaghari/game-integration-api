@@ -22,6 +22,15 @@ func (r *loginRequest) UnmarshalJSON(data []byte) error {
 	})(r))
 }
 
+type LoginResponse struct {
+	Token    string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"`
+	Username string `json:"username" example:"testuser1"`
+}
+
+type LoginErrorResponse struct {
+	Error string `json:"error" example:"invalid credentials"`
+}
+
 // Login godoc
 // @Summary Authenticate user
 // @Tags Auth
@@ -29,20 +38,20 @@ func (r *loginRequest) UnmarshalJSON(data []byte) error {
 // @Accept json
 // @Produce json
 // @Param credentials body loginRequest true "User credentials" example({"username": "testuser1", "password": "testpass"})
-// @Success 200 {object} map[string]interface{} "{token: string, username: string}"
-// @Failure 400 {object} map[string]interface{} "Invalid request"
-// @Failure 401 {object} map[string]interface{} "Invalid credentials"
+// @Success 200 {object} LoginResponse "Login response"
+// @Failure 400 {object} LoginErrorResponse "Invalid request"
+// @Failure 401 {object} LoginErrorResponse "Invalid credentials"
 // @Router /auth/login [post]
 func (h *Handlers) Login(c *gin.Context) {
 	var req loginRequest
 	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, LoginErrorResponse{Error: err.Error()})
 		return
 	}
 	token, err := h.AuthUseCase.Login(req.Username, req.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, LoginErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token": token, "username": req.Username})
+	c.JSON(http.StatusOK, LoginResponse{Token: token, Username: req.Username})
 }

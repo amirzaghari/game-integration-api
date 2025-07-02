@@ -3,7 +3,11 @@ package http
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
+
+	"gameintegrationapi/internal/infrastructure"
+	"gameintegrationapi/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,6 +32,18 @@ func (r *withdrawRequest) UnmarshalJSON(data []byte) error {
 	})(r))
 }
 
+type BetResponse struct {
+	TransactionID         uint    `json:"transaction_id" example:"123"`
+	ProviderTransactionID string  `json:"provider_transaction_id" example:"tx123"`
+	OldBalance            float64 `json:"old_balance" example:"100.0"`
+	NewBalance            float64 `json:"new_balance" example:"90.0"`
+	Status                string  `json:"status" example:"COMPLETED"`
+}
+
+type BetErrorResponse struct {
+	Error string `json:"error" example:"insufficient funds"`
+}
+
 // Withdraw godoc
 // @Summary Place a bet (withdraw)
 // @Tags Bet
@@ -35,9 +51,9 @@ func (r *withdrawRequest) UnmarshalJSON(data []byte) error {
 // @Accept json
 // @Produce json
 // @Param body body withdrawRequest true "Withdraw details"
-// @Success 200 {object} map[string]interface{} "Bet response"
-// @Failure 400 {object} map[string]interface{} "Invalid request"
-// @Failure 401 {object} map[string]interface{} "Unauthorized"
+// @Success 200 {object} BetResponse "Bet response"
+// @Failure 400 {object} BetErrorResponse "Invalid request"
+// @Failure 401 {object} BetErrorResponse "Unauthorized"
 // @Security BearerAuth
 // @Router /bet/withdraw [post]
 func (h *Handlers) Withdraw(c *gin.Context) {
@@ -49,6 +65,14 @@ func (h *Handlers) Withdraw(c *gin.Context) {
 	}
 	tx, err := h.WalletUseCase.Withdraw(userID.(uint), req.Amount, req.Currency, req.ProviderTransaction, req.RoundID, req.GameID)
 	if err != nil {
+		if err == usecase.ErrWalletServiceUnavailable {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "wallet service is not available"})
+			return
+		}
+		if errors.Is(err, infrastructure.ErrWalletServiceBadRequest) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -86,9 +110,9 @@ func (r *depositRequest) UnmarshalJSON(data []byte) error {
 // @Accept json
 // @Produce json
 // @Param body body depositRequest true "Deposit details"
-// @Success 200 {object} map[string]interface{} "Bet response"
-// @Failure 400 {object} map[string]interface{} "Invalid request"
-// @Failure 401 {object} map[string]interface{} "Unauthorized"
+// @Success 200 {object} BetResponse "Bet response"
+// @Failure 400 {object} BetErrorResponse "Invalid request"
+// @Failure 401 {object} BetErrorResponse "Unauthorized"
 // @Security BearerAuth
 // @Router /bet/deposit [post]
 func (h *Handlers) Deposit(c *gin.Context) {
@@ -100,6 +124,14 @@ func (h *Handlers) Deposit(c *gin.Context) {
 	}
 	tx, err := h.WalletUseCase.Deposit(userID.(uint), req.Amount, req.Currency, req.ProviderTransaction, req.ProviderWithdrawnTxID)
 	if err != nil {
+		if err == usecase.ErrWalletServiceUnavailable {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "wallet service is not available"})
+			return
+		}
+		if errors.Is(err, infrastructure.ErrWalletServiceBadRequest) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -131,9 +163,9 @@ func (r *cancelRequest) UnmarshalJSON(data []byte) error {
 // @Accept json
 // @Produce json
 // @Param body body cancelRequest true "Cancel details"
-// @Success 200 {object} map[string]interface{} "Bet response"
-// @Failure 400 {object} map[string]interface{} "Invalid request"
-// @Failure 401 {object} map[string]interface{} "Unauthorized"
+// @Success 200 {object} BetResponse "Bet response"
+// @Failure 400 {object} BetErrorResponse "Invalid request"
+// @Failure 401 {object} BetErrorResponse "Unauthorized"
 // @Security BearerAuth
 // @Router /bet/cancel [post]
 func (h *Handlers) Cancel(c *gin.Context) {
@@ -145,6 +177,14 @@ func (h *Handlers) Cancel(c *gin.Context) {
 	}
 	tx, err := h.WalletUseCase.Cancel(userID.(uint), req.ProviderTransaction)
 	if err != nil {
+		if err == usecase.ErrWalletServiceUnavailable {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "wallet service is not available"})
+			return
+		}
+		if errors.Is(err, infrastructure.ErrWalletServiceBadRequest) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

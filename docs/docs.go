@@ -41,24 +41,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{token: string, username: string}",
+                        "description": "Login response",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.LoginResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.LoginErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Invalid credentials",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.LoginErrorResponse"
                         }
                     }
                 }
@@ -97,22 +94,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Bet response",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetErrorResponse"
                         }
                     }
                 }
@@ -151,22 +145,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Bet response",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetErrorResponse"
                         }
                     }
                 }
@@ -205,22 +196,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Bet response",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.BetErrorResponse"
                         }
                     }
                 }
@@ -265,15 +253,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Profile response",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.ProfileResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/http.ProfileErrorResponse"
                         }
                     }
                 }
@@ -281,6 +267,88 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "http.BetErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "insufficient funds"
+                }
+            }
+        },
+        "http.BetResponse": {
+            "type": "object",
+            "properties": {
+                "new_balance": {
+                    "type": "number",
+                    "example": 90
+                },
+                "old_balance": {
+                    "type": "number",
+                    "example": 100
+                },
+                "provider_transaction_id": {
+                    "type": "string",
+                    "example": "tx123"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "COMPLETED"
+                },
+                "transaction_id": {
+                    "type": "integer",
+                    "example": 123
+                }
+            }
+        },
+        "http.LoginErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "invalid credentials"
+                }
+            }
+        },
+        "http.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "testuser1"
+                }
+            }
+        },
+        "http.ProfileErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "unauthorized"
+                }
+            }
+        },
+        "http.ProfileResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number",
+                    "example": 100
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "USD"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "http.cancelRequest": {
             "type": "object",
             "required": [

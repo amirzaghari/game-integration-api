@@ -25,6 +25,8 @@ type walletUseCase struct {
 	walletClient    *infrastructure.WalletClient
 }
 
+var ErrWalletServiceUnavailable = errors.New("wallet service is not available")
+
 func NewWalletUseCase(userRepo repository.UserRepository, transactionRepo repository.TransactionRepository, db *gorm.DB, walletClient *infrastructure.WalletClient) WalletUseCase {
 	return &walletUseCase{userRepo, transactionRepo, db, walletClient}
 }
